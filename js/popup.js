@@ -30,7 +30,8 @@ $('#get_url_btn').click(e => {
     document.execCommand("Copy");
     // 将input元素隐藏，通知操作完成！
     w.style.display='none';
-    alert("复制成功");
+    $('#span_copy_result').text("复制成功!");
+    // alert("复制成功");
 });
 
 
