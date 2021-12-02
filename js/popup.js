@@ -12,7 +12,12 @@ $('#set_user_data_btn').click(e => {
     var userData = getUserData();
     var bg = chrome.extension.getBackgroundPage();
     var defaultData = bg.getDefaultData();
-    bg.setReminder(userData.userInterval * 60, defaultData.defaultTip, userData);
+    bg.setReminder(userData.userInterval, defaultData.defaultTip, userData);
+});
+
+$('#get_store_data_btn').click(e => {
+    var bg = chrome.extension.getBackgroundPage();
+    bg.getStoreData()
 });
 
 function getUserData() {
@@ -26,9 +31,11 @@ function getUserData() {
     if (userTag == '') {
         userTag = defaultData.defaultTag;
     }
-    var userInterval = parseInt($('#input_interval').val());
+    var userInterval = $('#input_interval').val();
     if (userInterval == '') {
         userInterval = defaultData.defaultInterval;
+    }else {
+        userInterval = parseInt(userInterval);
     }
 
     var userData = {

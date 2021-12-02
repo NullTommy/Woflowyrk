@@ -83,13 +83,29 @@ function getReviewUrl(userData) {
     return endUrl;
 };
 
+
+/* 获取保存的数据*/
+function getStoreData() {
+    chrome.storage.sync.get(['tip','userData'], result => {
+        var dataStr = "数据:";
+        if(result.tip){
+            dataStr = dataStr + result.tip;
+        }
+        dataStr += "\n";
+        if(result.userData){
+            dataStr += JSON.stringify(result.userData);
+        }
+        alert(dataStr);
+    });
+};
+
 /* 获取默认数据*/
 function getDefaultData() {
     var defaultData= {
         "defaultUserUrl": "https://workflowy.com/#",
         "defaultQueryUrl": "https://workflowy.com/#?q=",
         "defaultTag": "@文档标题",
-        "defaultInterval": 1,
+        "defaultInterval": 30,
         "defaultTip": "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！"
     }
     return defaultData;
