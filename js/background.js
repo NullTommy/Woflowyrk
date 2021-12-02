@@ -41,8 +41,7 @@ function setReminder(interval, tip, userData) {
         console.log("*******Got an alarm!*********", alarm);
     });
 
-    chrome.storage.sync.set({"interval": interval, "tip": tip});
-    chrome.storage.sync.set({"userData": userData});
+    chrome.storage.sync.set({"interval": interval, "tip": tip,"userData": userData});
     alert("设置成功");
 };
 
@@ -64,10 +63,11 @@ function copyToClipboard(copyText) {
 /* 获取WF回顾的URL*/
 function getReviewUrl(userData) {
     /* 1、生成跳转链接 */
-    var base = '' != userData.userUrl ? userData.userUrl + "?q=" : "https://workflowy.com/#?q=";
+    var defaultData = getDefaultData();
+    var base = '' != userData.userUrl ? userData.userUrl + "?q=" : defaultData.defaultQueryUrl;
     var since = "last-changed-since:";
     var before = "last-changed-before:";
-    var tag = '' != userData.userTag ? userData.userTag : "@文档标题";
+    var tag = '' != userData.userTag ? userData.userTag : defaultData.defaultTag;
     var blank = "%20";
 
     var nowTime = new Date().getTime();
@@ -81,6 +81,18 @@ function getReviewUrl(userData) {
     var beforeDateStr = beforeDate.format("MM/dd/yyyy");
     var endUrl =  base + since + sinceDateStr + blank + before + beforeDateStr + blank  + tag;
     return endUrl;
+};
+
+/* 获取默认数据*/
+function getDefaultData() {
+    var defaultData= {
+        "defaultUserUrl": "https://workflowy.com/#",
+        "defaultQueryUrl": "https://workflowy.com/#?q=",
+        "defaultTag": "@文档标题",
+        "defaultInterval": 1,
+        "defaultTip": "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！"
+    }
+    return defaultData;
 };
 
 Date.prototype.format = function(fmt) {
@@ -106,5 +118,11 @@ Date.prototype.format = function(fmt) {
 
 // 一加载插件，就默认设置
 chrome.runtime.onInstalled.addListener(function(reason){
-    setReminder(120, "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！", {});
+    var defaultData = getDefaultData();
+    var userData = {
+        "userUrl": defaultData.defaultUserUrl,
+        "userTag": defaultData.defaultTag,
+        "userInterval": defaultData.defaultInterval
+    }
+    setReminder(userData.defaultInterval, defaultData.defaultTip, userData);
 });

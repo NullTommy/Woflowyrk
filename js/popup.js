@@ -11,21 +11,24 @@
 $('#set_user_data_btn').click(e => {
     var userData = getUserData();
     var bg = chrome.extension.getBackgroundPage();
-    bg.setReminder(userData.userInterval * 60, "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！", userData);
+    var defaultData = bg.getDefaultData();
+    bg.setReminder(userData.userInterval * 60, defaultData.defaultTip, userData);
 });
 
 function getUserData() {
+    var bg = chrome.extension.getBackgroundPage();
+    var defaultData = bg.getDefaultData();
     var userUrl = $('#input_baseUrl').val();
     if (userUrl == '') {
-        userUrl = "https://workflowy.com/#?q=";
+        userUrl = defaultData.defaultUserUrl;
     }
     var userTag = $('#input_tag').val();
     if (userTag == '') {
-        userTag = "@文档标题";
+        userTag = defaultData.defaultTag;
     }
-    var userInterval = $('#input_interval').val();
+    var userInterval = parseInt($('#input_interval').val());
     if (userInterval == '') {
-        userInterval = 1;
+        userInterval = defaultData.defaultInterval;
     }
 
     var userData = {
