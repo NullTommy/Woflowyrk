@@ -14,16 +14,19 @@
 		"default_icon": "icon.png",
 		"default_popup": "popup.html"
 	},
+	"background": {
+		"scripts": ["js/background.js"],
+		"persistent": true
+	},
 	"content_scripts":
 	[
 		{
-			//"matches": ["http://*/*", "https://*/*"],
-			// "<all_urls>" 表示匹配所有地址
-			"matches": ["https://workflowy.com/*","http://workflowy.com/*"],
+			"matches": ["<all_urls>"],
 			"js": ["js/jquery-1.8.3.js", "js/content-script.js"],
 			"run_at": "document_start"
 		}
 	],
+	"permissions": ["notifications", "alarms", "storage"],
 	"web_accessible_resources":
 	[
 		"inject.js"
