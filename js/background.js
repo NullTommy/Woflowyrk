@@ -5,7 +5,7 @@
 'use strict';
 let alarmSet = new Set();
 
-function setReminder(interval, tip) {
+function setReminder(interval, tip, userData) {
     // interval 单位分钟
     // tip 提示的消息
     var st = new Date().getTime() + 60 * 1000 * interval;
@@ -18,9 +18,9 @@ function setReminder(interval, tip) {
         if(alarmSet.has(alarm.scheduledTime)){
             return
         }
-        var endUrl = getReviewUrl();
-        copyToClipboard(endUrl);
-        chrome.storage.sync.get(['tip'], result => {
+
+
+        chrome.storage.sync.get(['tip','userData'], result => {
             if(result.tip){
                 chrome.notifications.create(
                     {type:"basic",
@@ -30,6 +30,10 @@ function setReminder(interval, tip) {
                         requireInteraction:true}
                 );
             }
+            if(result.userData){
+                var endUrl = getReviewUrl(result.userData);
+                copyToClipboard(endUrl);
+            }
         });
 
         alarmSet.clear();
@@ -38,6 +42,7 @@ function setReminder(interval, tip) {
     });
 
     chrome.storage.sync.set({"interval": interval, "tip": tip});
+    chrome.storage.sync.set({"userData": userData});
     alert("set reminder success");
 };
 
@@ -57,12 +62,12 @@ function copyToClipboard(copyText) {
 
 
 /* 获取WF回顾的URL*/
-function getReviewUrl() {
+function getReviewUrl(userData) {
     /* 1、生成跳转链接 */
-    var base = "https://workflowy.com/#?q=";
+    var base = '' != userData.userUrl ? userData.userUrl + "?q=" : "https://workflowy.com/#?q=";
     var since = "last-changed-since:";
     var before = "last-changed-before:";
-    var tag = "@文档标题";
+    var tag = '' != userData.userTag ? userData.userTag : "@文档标题";
     var blank = "%20";
 
     var nowTime = new Date().getTime();
@@ -76,8 +81,6 @@ function getReviewUrl() {
     var beforeDateStr = beforeDate.format("MM/dd/yyyy");
     var endUrl =  base + since + sinceDateStr + blank + before + beforeDateStr + blank  + tag;
     return endUrl;
-
-
 };
 
 Date.prototype.format = function(fmt) {
@@ -103,5 +106,5 @@ Date.prototype.format = function(fmt) {
 
 // 一加载插件，就默认设置
 chrome.runtime.onInstalled.addListener(function(reason){
-    setReminder(120, "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！");
+    setReminder(120, "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！", {});
 });
