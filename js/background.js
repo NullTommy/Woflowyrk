@@ -43,7 +43,7 @@ function setReminder(interval, tip, userData) {
 
     chrome.storage.sync.set({"interval": interval, "tip": tip});
     chrome.storage.sync.set({"userData": userData});
-    alert("set reminder success");
+    alert("设置成功");
 };
 
 /* 将内容复制到剪贴板 */

@@ -1,6 +1,6 @@
 ﻿$('#get_url_btn').click(e => {
     var userData = getUserData();
-    alert(JSON.stringify(userData))
+    // alert(JSON.stringify(userData))
     var bg = chrome.extension.getBackgroundPage();
     var endUrl = bg.getReviewUrl(userData);
     $('#input_result').val(endUrl);
