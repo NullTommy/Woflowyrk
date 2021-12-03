@@ -20,6 +20,16 @@ $('#get_store_data_btn').click(e => {
     bg.getStoreData()
 });
 
+$('#click_ajax_btn').click(e => {
+    var bg = chrome.extension.getBackgroundPage();
+    bg.sendTest()
+});
+
+$('#show_alarms_btn').click(e => {
+    var bg = chrome.extension.getBackgroundPage();
+    bg.getAllAlarms()
+});
+
 function getUserData() {
     var bg = chrome.extension.getBackgroundPage();
     var defaultData = bg.getDefaultData();

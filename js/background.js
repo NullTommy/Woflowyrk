@@ -83,6 +83,12 @@ function getReviewUrl(userData) {
     return endUrl;
 };
 
+/* 获取保存的数据*/
+function getAllAlarms() {
+    chrome.alarms.getAll(function(alarms) {
+        alert(JSON.stringify(alarms));
+    })
+};
 
 /* 获取保存的数据*/
 function getStoreData() {
@@ -96,6 +102,15 @@ function getStoreData() {
             dataStr += JSON.stringify(result.userData);
         }
         alert(dataStr);
+    });
+};
+
+/* 触发手机*/
+function sendTest() {
+    $.ajax({
+        url: "https://api.day.app/test", async: true, success: function (result) {
+            alert("ajax Success")
+        }
     });
 };
 
@@ -140,5 +155,5 @@ chrome.runtime.onInstalled.addListener(function(reason){
         "userTag": defaultData.defaultTag,
         "userInterval": defaultData.defaultInterval
     }
-    setReminder(userData.defaultInterval, defaultData.defaultTip, userData);
+    setReminder(userData.userInterval, defaultData.defaultTip, userData);
 });
