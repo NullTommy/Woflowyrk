@@ -91,7 +91,7 @@ function getAllAlarms() {
 };
 
 /* 获取保存的数据*/
-function getStoreData() {
+function showStoreData() {
     chrome.storage.sync.get(['tip','userData'], result => {
         var dataStr = "数据:";
         if(result.tip){
@@ -120,7 +120,7 @@ function getDefaultData() {
         "defaultUserUrl": "https://workflowy.com/#",
         "defaultQueryUrl": "https://workflowy.com/#?q=",
         "defaultTag": "@文档标题",
-        "defaultInterval": 30,
+        "defaultInterval": 60,
         "defaultTip": "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！"
     }
     return defaultData;

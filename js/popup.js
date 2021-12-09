@@ -1,6 +1,21 @@
-﻿$('#get_url_btn').click(e => {
+﻿
+/*加载用户保存的数据*/
+chrome.storage.sync.get(['tip','userData'], result => {
+    if(result.tip){
+
+    }
+    if(result.userData){
+        let inputBaseUrl = document.getElementById('input_baseUrl');
+        let inputTag = document.getElementById('input_tag');
+        let inputInterval = document.getElementById('input_interval');
+        inputBaseUrl.value = result.userData.userUrl;
+        inputTag.value = result.userData.userTag;
+        inputInterval.value = result.userData.userInterval;
+    }
+});
+
+$('#get_url_btn').click(e => {
     var userData = getUserData();
-    // alert(JSON.stringify(userData))
     var bg = chrome.extension.getBackgroundPage();
     var endUrl = bg.getReviewUrl(userData);
     $('#input_result').val(endUrl);
@@ -17,7 +32,7 @@ $('#set_user_data_btn').click(e => {
 
 $('#get_store_data_btn').click(e => {
     var bg = chrome.extension.getBackgroundPage();
-    bg.getStoreData()
+    bg.showStoreData()
 });
 
 $('#click_ajax_btn').click(e => {
