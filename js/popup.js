@@ -1,5 +1,5 @@
 ﻿
-/*加载用户保存的数据*/
+/*加载用户保存的数据-进入pop页面时触发*/
 chrome.storage.sync.get(['tip','userData'], result => {
     if(result.tip){
 
@@ -14,6 +14,7 @@ chrome.storage.sync.get(['tip','userData'], result => {
     }
 });
 
+/* 【按钮】【获取历史回顾URL】生成并复制URL */
 $('#get_url_btn').click(e => {
     var userData = getUserData();
     var bg = chrome.extension.getBackgroundPage();
@@ -23,6 +24,7 @@ $('#get_url_btn').click(e => {
     $('#span_copy_result').text("链接自动复制成功!");
 });
 
+/* 【按钮】【测试成功即可设置用户数据】保存设置数据 */
 $('#set_user_data_btn').click(e => {
     var userData = getUserData();
     var bg = chrome.extension.getBackgroundPage();
@@ -30,16 +32,19 @@ $('#set_user_data_btn').click(e => {
     bg.setReminder(userData.userInterval, defaultData.defaultTip, userData);
 });
 
+/* 【按钮】【获取已保存的数据】加载保存的设置数据 */
 $('#get_store_data_btn').click(e => {
     var bg = chrome.extension.getBackgroundPage();
     bg.showStoreData()
 });
 
+/*【按钮】【执行请求】执行请求按钮点击时间*/
 $('#click_ajax_btn').click(e => {
     var bg = chrome.extension.getBackgroundPage();
     bg.sendTest()
 });
 
+/*【按钮】【查看定时器】*/
 $('#show_alarms_btn').click(e => {
     var bg = chrome.extension.getBackgroundPage();
     bg.getAllAlarms()

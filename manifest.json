@@ -26,9 +26,5 @@
 			"run_at": "document_start"
 		}
 	],
-	"permissions": ["notifications", "alarms", "storage","https://api.day.app/"],
-	"web_accessible_resources":
-	[
-		"inject.js"
-	]
+	"permissions": ["notifications", "alarms", "storage","https://api.day.app/"]
 }
