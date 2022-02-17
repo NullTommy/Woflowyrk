@@ -71,7 +71,10 @@ function getReviewUrl(userData) {
     var blank = "%20";
 
     var nowTime = new Date().getTime();
-    var ran = Math.ceil(Math.random()*100);
+    var sourceDate = new Date("2021/05/01");//标签开始时间
+    var sourceDateTime = sourceDate.getTime();
+    var dayDiff = Math.round((nowTime - sourceDateTime) / (24 * 3600 * 1000));
+    var ran = Math.ceil(Math.random() * dayDiff);//生成0-dayDiff之间的数字
 
     var sinceDate = new Date();
     var beforeDate = new Date();
