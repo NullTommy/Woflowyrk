@@ -157,3 +157,14 @@ chrome.runtime.onInstalled.addListener(function(reason){
     }
     setReminder(userData.userInterval, defaultData.defaultTip, userData);
 });
+
+// 每次电脑重启或者谷歌浏览器重启自动加载
+chrome.runtime.onStartup.addListener(function(reason){
+    var defaultData = getDefaultData();
+    var userData = {
+        "userUrl": defaultData.defaultUserUrl,
+        "userTag": defaultData.defaultTag,
+        "userInterval": defaultData.defaultInterval
+    }
+    setReminder(userData.userInterval, defaultData.defaultTip, userData);
+});

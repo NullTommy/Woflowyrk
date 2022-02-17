@@ -11,6 +11,8 @@ chrome.storage.sync.get(['tip','userData'], result => {
         inputBaseUrl.value = result.userData.userUrl;
         inputTag.value = result.userData.userTag;
         inputInterval.value = result.userData.userInterval;
+        //每次加载页面时自动生成链接
+        $('#get_url_btn').click();
     }
 });
 
