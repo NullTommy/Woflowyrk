@@ -32,6 +32,7 @@ $('#set_user_data_btn').click(e => {
     var bg = chrome.extension.getBackgroundPage();
     var defaultData = bg.getDefaultData();
     bg.setReminder(userData.userInterval, defaultData.defaultTip, userData);
+    alert("用户设置已保存");
 });
 
 /* 【按钮】【获取已保存的数据】加载保存的设置数据 */

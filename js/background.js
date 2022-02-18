@@ -42,7 +42,6 @@ function setReminder(interval, tip, userData) {
     });
 
     chrome.storage.sync.set({"interval": interval, "tip": tip,"userData": userData});
-    alert("设置成功");
 };
 
 /* 将内容复制到剪贴板 */
@@ -159,6 +158,7 @@ chrome.runtime.onInstalled.addListener(function(reason){
         "userInterval": defaultData.defaultInterval
     }
     setReminder(userData.userInterval, defaultData.defaultTip, userData);
+    alert("插件安装或更新成功！提醒初始化成功");
 });
 
 // 每次电脑重启或者谷歌浏览器重启自动加载
@@ -170,4 +170,5 @@ chrome.runtime.onStartup.addListener(function(reason){
         "userInterval": defaultData.defaultInterval
     }
     setReminder(userData.userInterval, defaultData.defaultTip, userData);
+    // alert("浏览器启动成功！提醒设置成功");
 });
