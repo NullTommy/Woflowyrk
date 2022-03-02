@@ -85,10 +85,22 @@ function getReviewUrl(userData) {
     return endUrl;
 };
 
-/* 获取保存的数据*/
+/* 获取保存的定时器数据*/
 function getAllAlarms() {
     chrome.alarms.getAll(function(alarms) {
-        alert(JSON.stringify(alarms));
+        let alarmTmpList = new Array();
+        for (let i in alarms){
+            var alarm = alarms[i];
+            var alarmTmp = {};
+            alarmTmp.name=alarm.name;
+            alarmTmp.periodInMinutes=alarm.periodInMinutes;
+            alarmTmp.scheduledTime=alarm.scheduledTime;
+            var scheduledDate = new Date(alarm.scheduledTime);
+            var scheduledTimeStr = scheduledDate.format("MM/dd/yyyy hh:mm:ss");
+            alarmTmp.scheduledTimeStr=scheduledTimeStr;
+            alarmTmpList.push(alarmTmp);
+        }
+        alert(JSON.stringify(alarmTmpList));
     })
 };
 
@@ -149,7 +161,7 @@ Date.prototype.format = function(fmt) {
     return fmt;
 };
 
-// 一加载插件，就默认设置
+// 一加载插件，就默认设置提醒
 chrome.runtime.onInstalled.addListener(function(reason){
     var defaultData = getDefaultData();
     var userData = {
@@ -161,7 +173,7 @@ chrome.runtime.onInstalled.addListener(function(reason){
     alert("插件安装或更新成功！提醒初始化成功");
 });
 
-// 每次电脑重启或者谷歌浏览器重启自动加载
+// 每次电脑重启或者谷歌浏览器重启自动加载用户数据
 chrome.runtime.onStartup.addListener(function(reason){
     var defaultData = getDefaultData();
     var userData = {
@@ -169,6 +181,13 @@ chrome.runtime.onStartup.addListener(function(reason){
         "userTag": defaultData.defaultTag,
         "userInterval": defaultData.defaultInterval
     }
+    chrome.storage.sync.get(['tip','userData'], result => {
+        if(result.userData){
+            userData.userUrl = result.userData.userUrl;
+            userData.userTag = result.userData.userTag;
+            userData.userInterval = result.userData.userInterval;
+        }
+    });
     setReminder(userData.userInterval, defaultData.defaultTip, userData);
     // alert("浏览器启动成功！提醒设置成功");
 });
