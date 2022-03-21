@@ -6,12 +6,13 @@
 let alarmSet = new Set();
 
 function setReminder(interval, tip, userData) {
+    //实际上：interval和tip都在userData中，所以直接使用userData
     // interval 单位分钟
     // tip 提示的消息
-    var st = new Date().getTime() + 60 * 1000 * interval;
+    var st = new Date().getTime() + 60 * 1000 * userData.userInterval;
     chrome.alarms.clearAll();
-    chrome.alarms.create("WFReviewReminder", {when: st, periodInMinutes:interval});
-    chrome.alarms.onAlarm.addListener(alarm => {
+    chrome.alarms.create("WFReviewReminder", {when: st, periodInMinutes:userData.userInterval});//创建定时器
+    chrome.alarms.onAlarm.addListener(alarm => {//设置定时器的执行逻辑
         if(alarm.name != "WFReviewReminder"){
             return
         }
@@ -19,8 +20,7 @@ function setReminder(interval, tip, userData) {
             return
         }
 
-
-        chrome.storage.sync.get(['tip','userData'], result => {
+        chrome.storage.local.get(['tip','userData'], result => {
             if(result.tip){
                 chrome.notifications.create(
                     {type:"basic",
@@ -31,8 +31,7 @@ function setReminder(interval, tip, userData) {
                 );
             }
             if(result.userData){
-                var endUrl = getReviewUrl(result.userData);
-                copyToClipboard(endUrl);
+                getReviewUrl(result.userData);
             }
         });
 
@@ -41,7 +40,7 @@ function setReminder(interval, tip, userData) {
         console.log("*******Got an alarm!*********", alarm);
     });
 
-    chrome.storage.sync.set({"interval": interval, "tip": tip,"userData": userData});
+    chrome.storage.local.set({"interval": userData.userInterval, "tip": userData.tip,"userData": userData}); //保存用户数据
 };
 
 /* 将内容复制到剪贴板 */
@@ -59,7 +58,7 @@ function copyToClipboard(copyText) {
 };
 
 
-/* 获取WF回顾的URL*/
+/* 获取WF回顾的URL, 并复制到剪贴板*/
 function getReviewUrl(userData) {
     /* 1、生成跳转链接 */
     var defaultData = getDefaultData();
@@ -70,7 +69,7 @@ function getReviewUrl(userData) {
     var blank = "%20";
 
     var nowTime = new Date().getTime();
-    var sourceDate = new Date("2021/05/01");//标签开始时间
+    var sourceDate = new Date("2021/07/01");//标签开始时间
     var sourceDateTime = sourceDate.getTime();
     var dayDiff = Math.round((nowTime - sourceDateTime) / (24 * 3600 * 1000));
     var ran = Math.ceil(Math.random() * dayDiff);//生成0-dayDiff之间的数字
@@ -82,6 +81,7 @@ function getReviewUrl(userData) {
     var sinceDateStr = sinceDate.format("MM/dd/yyyy");
     var beforeDateStr = beforeDate.format("MM/dd/yyyy");
     var endUrl =  base + since + sinceDateStr + blank + before + beforeDateStr + blank  + tag;
+    copyToClipboard(endUrl);
     return endUrl;
 };
 
@@ -106,7 +106,7 @@ function getAllAlarms() {
 
 /* 获取保存的数据*/
 function showStoreData() {
-    chrome.storage.sync.get(['tip','userData'], result => {
+    chrome.storage.local.get(['tip','userData'], result => {
         var dataStr = "数据:";
         if(result.tip){
             dataStr = dataStr + result.tip;
@@ -128,16 +128,56 @@ function sendTest() {
     });
 };
 
+/* 获取用户数据结构*/
+function getUserStorageObj() {
+    var userData = {
+        "userUrl": "",
+        "userQueryUrl": "",
+        "userTag": "",
+        "userInterval": "",
+        "tip":""
+    }
+    return userData;
+};
+
 /* 获取默认数据*/
 function getDefaultData() {
     var defaultData= {
         "defaultUserUrl": "https://workflowy.com/#",
         "defaultQueryUrl": "https://workflowy.com/#?q=",
         "defaultTag": "@文档标题",
-        "defaultInterval": 60,
-        "defaultTip": "回顾一下WorkFlowy吧!链接已自动复制到剪贴板！"
+        "defaultInterval": 240,
+        "defaultTip": "回顾一下 WorkFlowy 吧!链接已自动复制到剪贴板!"
     }
     return defaultData;
+};
+
+/* 转换默认数据为用户数据*/
+function transToUserData(defaultData) {
+    var userData = getUserStorageObj();
+    userData.userUrl =  defaultData.defaultUserUrl;
+    userData.userQueryUrl =  defaultData.defaultQueryUrl;
+    userData.userTag =  defaultData.defaultTag;
+    userData.userInterval =  defaultData.defaultInterval;
+    userData.tip =  defaultData.defaultTip;
+    return userData;
+};
+
+/* 加载用户本地保存的数据*/
+function buildUserStorageData(userData) {
+    chrome.storage.local.get(['tip','userData'], result => {
+        if(result.userData){
+            // alert("buildUserStorageData:result-"+JSON.stringify(result.userData));
+            userData.userUrl = result.userData.userUrl;
+            userData.userTag = result.userData.userTag;
+            userData.userInterval = result.userData.userInterval;
+        }
+        if(result.tip){
+            userData.tip = result.tip;
+        }
+    });
+    // alert("buildUserStorageData:"+JSON.stringify(userData));
+    return userData;
 };
 
 Date.prototype.format = function(fmt) {
@@ -163,31 +203,22 @@ Date.prototype.format = function(fmt) {
 
 // 一加载插件，就默认设置提醒
 chrome.runtime.onInstalled.addListener(function(reason){
-    var defaultData = getDefaultData();
-    var userData = {
-        "userUrl": defaultData.defaultUserUrl,
-        "userTag": defaultData.defaultTag,
-        "userInterval": defaultData.defaultInterval
-    }
-    setReminder(userData.userInterval, defaultData.defaultTip, userData);
+    var userData = transToUserData(getDefaultData());
+    setReminder(userData.userInterval, userData.tip, userData);
     alert("插件安装或更新成功！提醒初始化成功");
 });
 
 // 每次电脑重启或者谷歌浏览器重启自动加载用户数据
 chrome.runtime.onStartup.addListener(function(reason){
-    var defaultData = getDefaultData();
-    var userData = {
-        "userUrl": defaultData.defaultUserUrl,
-        "userTag": defaultData.defaultTag,
-        "userInterval": defaultData.defaultInterval
-    }
-    chrome.storage.sync.get(['tip','userData'], result => {
+    var userDefaultData = transToUserData(getDefaultData());
+    chrome.storage.local.get(['tip','userData'], result => {
+        if(result.tip){
+
+        }
         if(result.userData){
-            userData.userUrl = result.userData.userUrl;
-            userData.userTag = result.userData.userTag;
-            userData.userInterval = result.userData.userInterval;
+            setReminder(result.userData.userInterval, result.userData.tip, result.userData);
+        }else {
+            setReminder(userDefaultData.userInterval, userDefaultData.tip, userDefaultData);
         }
     });
-    setReminder(userData.userInterval, defaultData.defaultTip, userData);
-    // alert("浏览器启动成功！提醒设置成功");
 });
