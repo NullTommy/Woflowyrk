@@ -77,7 +77,7 @@ function getReviewUrl(userData) {
     var sinceDate = new Date();
     var beforeDate = new Date();
     sinceDate.setTime(nowTime-ran * 1000 * 60 * 60 * 24)
-    beforeDate.setTime(nowTime-(ran-1) * 1000 * 60 * 60 * 24)
+    beforeDate.setTime(nowTime-(ran-2) * 1000 * 60 * 60 * 24)
     var sinceDateStr = sinceDate.format("MM/dd/yyyy");
     var beforeDateStr = beforeDate.format("MM/dd/yyyy");
     var endUrl =  base + since + sinceDateStr + blank + before + beforeDateStr + blank  + tag;
@@ -124,6 +124,27 @@ function sendTest() {
     $.ajax({
         url: "https://api.day.app/test", async: true, success: function (result) {
             alert("ajax Success")
+        }
+    });
+};
+
+/* 触发手机*/
+function sendLarkMsg(msgText) {
+    var t = {
+        "msg_type": "text",
+        "content": {
+        "text": msgText
+        }
+    };
+    $.ajax({
+        url: "https://open.feishu.cn/open-apis/bot/v2/hook/6c89f9db-0ec0-4edd-a170-79b167389768",
+        async: true,
+        type: 'POST',
+        data: JSON.stringify(t),
+        dataType: 'json',
+        contentType: "application/json;charset=UTF-8",
+        success: function (result) {
+            alert("发送结果："+JSON.stringify(result))
         }
     });
 };

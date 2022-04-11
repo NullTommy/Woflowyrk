@@ -26,5 +26,5 @@
 			"run_at": "document_start"
 		}
 	],
-	"permissions": ["notifications", "alarms", "storage","https://api.day.app/"]
+	"permissions": ["notifications", "alarms", "storage","https://api.day.app/","https://open.feishu.cn/open-apis/bot/v2/hook/6c89f9db-0ec0-4edd-a170-79b167389768"]
 }

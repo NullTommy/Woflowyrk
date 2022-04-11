@@ -29,6 +29,14 @@ $('#click_ajax_btn').click(e => {
     bg.sendTest()
 });
 
+/*【按钮】【执行请求】飞书处理*/
+$('#click_ajax_lark_btn').click(e => {
+    var bg = chrome.extension.getBackgroundPage();
+    var pageData = getPageData();
+    var endUrl = bg.getReviewUrl(pageData);
+    bg.sendLarkMsg(endUrl)
+});
+
 /*【按钮】【查看定时器】*/
 $('#show_alarms_btn').click(e => {
     var bg = chrome.extension.getBackgroundPage();
